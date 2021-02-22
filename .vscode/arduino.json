@@ -1,0 +1,7 @@
+{
+    "board": "arduino:megaavr:nona4809",
+    "configuration": "mode=off",
+    "programmer": "AVRISP mkII",
+    "port": "COM3",
+    "sketch": "deepsense\\deepsense.ino"
+}
