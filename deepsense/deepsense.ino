@@ -21,7 +21,7 @@ Adafruit_GPS GPS(&mySerial);
 
 /* rtcbot schema
 
-writeFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B L"
+writeFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B I"
 writeKeys=[
     "temperature", "pressure", "altitude",
     "gyro_x", "gyro_y", "gyro_z",
@@ -33,6 +33,7 @@ writeKeys=[
     "gps_fix",
     "gps_fix_quality",
     "latitude", "longitude", "speed", "angle", "gps_altitude",
+    "gps_num_satellites".
     "photos_taken"
 ]
 */
@@ -40,12 +41,16 @@ writeKeys=[
 typedef struct __attribute__((packed)) {
     // BMP (K, hPa, m)
     float temperature, pressure, altitude;
+
     // Gyro (rad/s)
     float gyro_x, gyro_y, gyro_z;
+
     // Accel (m/s2)
     float accel_x, accel_y, accel_z;
+
     // Mag (uT)
     float mag_x, mag_y, mag_z;
+
     // GPS
     uint8_t hour, minute, second;
     uint16_t milisecond;
@@ -62,7 +67,7 @@ typedef struct __attribute__((packed)) {
 
 /* rtcbot schema
 
-writeFormat="< L"
+writeFormat="< I"
 writeKeys=[
     "photos_taken"
 ]
