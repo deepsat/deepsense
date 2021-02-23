@@ -8,7 +8,7 @@
 
 #define ground_pressure 1013.0
 #define lora_delay 200
-#define lora_frequency
+#define lora_frequency 0
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
@@ -91,13 +91,6 @@ void setupGPS() {
     GPS.sendCommand(PGCMD_ANTENNA);
 }
 
-void setup() {
-    Serial1.begin(115200);
-    Serial.begin(115200);
-
-    // Lora.begin(lora_frequency);
-    setupGPS();
-}
 
 void readBPMData() {
     toPi.temperature = bme.readTemperature();
@@ -140,7 +133,15 @@ void readAccelMagData() {
     toPi.mag_z = mevent.magnetic.z;
 }
 
-unsigned long last_lora;
+unsigned long last_lora = 0;
+
+void setup() {
+    Serial1.begin(115200);
+    Serial.begin(115200);
+
+    Lora.begin(lora_frequency);
+    setupGPS();
+}
 
 void loop() {
     toPi.timestamp = millis();
