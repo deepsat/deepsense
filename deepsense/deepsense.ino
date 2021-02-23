@@ -21,8 +21,8 @@ Adafruit_GPS GPS(&mySerial);
 
 /* rtcbot schema
 
-writeFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B I"
-writeKeys=[
+readFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B I",
+readKeys=[
     "temperature", "pressure", "altitude",
     "gyro_x", "gyro_y", "gyro_z",
     "accel_x", "accel_y", "accel_z",
@@ -33,7 +33,7 @@ writeKeys=[
     "gps_fix",
     "gps_fix_quality",
     "latitude", "longitude", "speed", "angle", "gps_altitude",
-    "gps_num_satellites".
+    "gps_num_satellites",
     "photos_taken"
 ]
 */
@@ -67,7 +67,7 @@ typedef struct __attribute__((packed)) {
 
 /* rtcbot schema
 
-writeFormat="< I"
+writeFormat="< I",
 writeKeys=[
     "photos_taken"
 ]
