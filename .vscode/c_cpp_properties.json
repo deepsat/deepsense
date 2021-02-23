@@ -3,6 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\piotr\\OneDrive\\Dokumenty\\Arduino\\libraries\\LoRa\\src",
                 "C:\\Users\\piotr\\OneDrive\\Dokumenty\\Arduino\\libraries\\Adafruit_Unified_Sensor",
                 "C:\\Users\\piotr\\OneDrive\\Dokumenty\\Arduino\\libraries\\Adafruit_FXAS21002C",
                 "C:\\Users\\piotr\\OneDrive\\Dokumenty\\Arduino\\libraries\\ArduinoJson\\src",

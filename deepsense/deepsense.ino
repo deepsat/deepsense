@@ -3,10 +3,12 @@
 #include <Adafruit_FXOS8700.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_Sensor.h>
+#include <LoRa.h>
 #include <Wire.h>
 
 #define ground_pressure 1013.0
 #define lora_delay 200
+#define lora_frequency
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
@@ -62,6 +64,7 @@ typedef __attribute__((packed)) struct {
     uint8_t gps_num_satellites;
     // rpi pingback
     uint16_t photos_taken;
+    uint32_t timestamp;
 } toPi_t;
 
 /* rtcbot schema
@@ -92,6 +95,7 @@ void setup() {
     Serial1.begin(115200);
     Serial.begin(115200);
 
+    // Lora.begin(lora_frequency);
     setupGPS();
 }
 
@@ -139,6 +143,7 @@ void readAccelMagData() {
 unsigned long last_lora;
 
 void loop() {
+    toPi.timestamp = millis();
     readGPSData();
     readBPMData();
     readAccelMagData();
@@ -153,5 +158,8 @@ void loop() {
     if (millis() - last_lora >= lora_delay) {
         last_lora = millis();
         // send toPi via lora
+        Lora.beginPacket();
+        Lora.write((char*)&fromPi, sizeof(fromPi));
+        Lora.endPacket();
     }
 }
