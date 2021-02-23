@@ -38,7 +38,7 @@ readKeys=[
 ]
 */
 // will use same payload with lora and raspi
-typedef struct __attribute__((packed)) {
+typedef __attribute__((packed)) struct {
     // BMP (K, hPa, m)
     float temperature, pressure, altitude;
 
@@ -60,9 +60,8 @@ typedef struct __attribute__((packed)) {
     // deg, deg, knots, deg, m
     float latitude, longitude, speed, angle, gps_altitude;
     uint8_t gps_num_satellites;
-
-    // rpi
-    uint32_t photos_taken;
+    // rpi pingback
+    uint16_t photos_taken;
 } toPi_t;
 
 /* rtcbot schema
@@ -73,9 +72,7 @@ writeKeys=[
 ]
 */
 
-typedef struct __attribute__((packed)) {
-    uint32_t photos_taken;
-} fromPi_t;
+typedef __attribute__((packed)) struct { uint16_t photos_taken; } fromPi_t;
 
 toPi_t toPi;
 fromPi_t fromPi;
@@ -93,6 +90,7 @@ void setupGPS() {
 
 void setup() {
     Serial1.begin(115200);
+    Serial.begin(115200);
 
     setupGPS();
 }
@@ -141,12 +139,17 @@ void readAccelMagData() {
 unsigned long last_lora;
 
 void loop() {
-    Serial1.readBytes((char*)&fromPi, sizeof(fromPi));
-    toPi.photos_taken = fromPi.photos_taken;
     readGPSData();
     readBPMData();
     readAccelMagData();
-    Serial1.write((char*)&toPi, sizeof(toPi));
+
+    if (Serial1.available()) {
+        Serial1.readBytes((char*)&fromPi, sizeof(fromPi));
+        toPi.photos_taken = fromPi.photos_taken;
+        Serial1.write((char*)&toPi, sizeof(toPi));
+    }
+
+    Serial.println(fromPi.photos_taken);
     if (millis() - last_lora >= lora_delay) {
         last_lora = millis();
         // send toPi via lora
