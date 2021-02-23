@@ -5,8 +5,8 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-#define ground_pressure 1013.0;
-#define lora_delay = 200;
+#define ground_pressure 1013.0
+#define lora_delay 200
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
@@ -105,8 +105,8 @@ void readGPSData() {
 
     toPi.hour = GPS.hour;
     toPi.minute = GPS.minute;
-    toPi.second = GPS.second;
-    toPi.milisecond = GPS.miliseconds;
+    toPi.second = GPS.seconds;
+    toPi.milisecond = GPS.milliseconds;
     toPi.day = GPS.day;
     toPi.month = GPS.month;
     toPi.year = GPS.year;
