@@ -159,7 +159,7 @@ void loop() {
         last_lora = millis();
         // send toPi via lora
         Lora.beginPacket();
-        Lora.write((char*)&fromPi, sizeof(fromPi));
+        Lora.write((char*)&toPi, sizeof(toPi));
         Lora.endPacket();
     }
 }
