@@ -80,18 +80,21 @@ typedef struct __attribute__((packed)) {
 toPi_t toPi;
 fromPi_t fromPi;
 
-void setup(void) {
-    Serial1.begin(115200);
-
+void setupGPS() {
     GPS.begin(9600);
     // These lines configure the GPS Module
     GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);  // Sets output to only RMC
                                                    // and GGA sentences
     GPS.sendCommand(
-        PMTK_SET_NMEA_UPDATE_1HZ);   // Sets the output to 1/second. If you want
-                                     // you can go higher/lower
-    GPS.sendCommand(PGCMD_ANTENNA);  // Can report if antenna is connected or
-                                     // not
+        PMTK_SET_NMEA_UPDATE_1HZ);  // Sets the output to 1/second. If you want
+                                    // you can go higher/lower
+    GPS.sendCommand(PGCMD_ANTENNA);
+}
+
+void setup() {
+    Serial1.begin(115200);
+
+    setupGPS();
 }
 
 void readBPMData() {
