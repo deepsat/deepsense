@@ -9,6 +9,7 @@
 #define ground_pressure 1013.0
 #define lora_delay 200
 #define lora_frequency 0
+#define sensor_delay 100
 
 /* Assign a unique ID to this sensor at the same time */
 Adafruit_FXAS21002C gyro = Adafruit_FXAS21002C(0x0021002C);
@@ -23,7 +24,7 @@ Adafruit_GPS GPS(&mySerial);
 
 /* rtcbot schema
 
-readFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B I",
+readFormat="< 3f 3f 3f 3f 3B H 3B ? B 5f B H I",
 readKeys=[
     "temperature", "pressure", "altitude",
     "gyro_x", "gyro_y", "gyro_z",
@@ -36,7 +37,8 @@ readKeys=[
     "gps_fix_quality",
     "latitude", "longitude", "speed", "angle", "gps_altitude",
     "gps_num_satellites",
-    "photos_taken"
+    "photos_taken",
+    "timestamp"
 ]
 */
 // will use same payload with lora and raspi
@@ -62,14 +64,14 @@ typedef __attribute__((packed)) struct {
     // deg, deg, knots, deg, m
     float latitude, longitude, speed, angle, gps_altitude;
     uint8_t gps_num_satellites;
-    // rpi pingback
+    
     uint16_t photos_taken;
     uint32_t timestamp;
 } toPi_t;
 
 /* rtcbot schema
 
-writeFormat="< I",
+writeFormat="< H",
 writeKeys=[
     "photos_taken"
 ]
@@ -90,7 +92,6 @@ void setupGPS() {
                                     // you can go higher/lower
     GPS.sendCommand(PGCMD_ANTENNA);
 }
-
 
 void readBPMData() {
     toPi.temperature = bme.readTemperature();
@@ -133,21 +134,26 @@ void readAccelMagData() {
     toPi.mag_z = mevent.magnetic.z;
 }
 
-unsigned long last_lora = 0;
+unsigned long lora_last = 0;
+unsigned long sensor_last = 0;
 
 void setup() {
     Serial1.begin(115200);
     Serial.begin(115200);
 
-    Lora.begin(lora_frequency);
+    // Lora.begin(lora_frequency);
     setupGPS();
 }
 
 void loop() {
     toPi.timestamp = millis();
-    readGPSData();
-    readBPMData();
-    readAccelMagData();
+
+    if (millis() - sensor_last >= sensor_delay) {
+        sensor_last = millis();
+        readGPSData();
+        readBPMData();
+        readAccelMagData();
+    }
 
     if (Serial1.available()) {
         Serial1.readBytes((char*)&fromPi, sizeof(fromPi));
@@ -155,12 +161,12 @@ void loop() {
         Serial1.write((char*)&toPi, sizeof(toPi));
     }
 
-    Serial.println(fromPi.photos_taken);
-    if (millis() - last_lora >= lora_delay) {
-        last_lora = millis();
+    Serial.println(fromPi.photos_taken); // debug only
+    if (millis() - lora_last >= lora_delay) {
+        lora_last = millis();
         // send toPi via lora
-        Lora.beginPacket();
-        Lora.write((char*)&toPi, sizeof(toPi));
-        Lora.endPacket();
+        // Lora.beginPacket();
+        // Lora.write((char*)&toPi, sizeof(toPi));
+        // Lora.endPacket();
     }
 }
